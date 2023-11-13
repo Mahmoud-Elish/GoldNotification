@@ -1,0 +1,63 @@
+﻿@model List<Gold>
+
+<h2>Gold Prices</h2>
+
+<table id="goldTable" class="table">
+    <thead>
+        <tr>
+            <th>Standard</th>
+            <th>Price</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var gold in Model)
+        {
+            <tr>
+                <td>@gold.Standard</td>
+                <td>@gold.Price</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- modal -->
+<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateModalLabel">Price Update</h5>
+            </div>
+            <div class="modal-body">
+                <!-- message of content -->
+                <p id="updateMessage"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function () {
+        function updateGoldPrices() {
+            $.ajax({
+                url: '/Home/GetUpdatedPrices',
+                type: 'GET',
+                success: function (data) {
+                    if (data.length > 0) {
+                        $('#goldTable tbody').empty();
+                        data.forEach(function (gold) {
+                            $('#goldTable tbody').append('<tr><td>' + gold.standard + '</td><td>' + gold.price + '</td></tr>');
+                        });
+
+                        data.forEach(function (gold) {
+                            $('#updateMessage').text('Price for ' + gold.standard + ' standard updated to ' + gold.price);
+                            $('#updateModal').modal('show');
+                        });
+                    }
+                },
+            });
+        }
+        setInterval(updateGoldPrices, 30000);
+    });
+</script>
